@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RL GridWorld - Interactive Reinforcement Learning</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <h1>🤖 RL GridWorld</h1>
+            <div class="subtitle">Interactive Reinforcement Learning Framework</div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- LEFT PANEL - PARAMETERS -->
+            <div class="parameters-panel">
+                <h2>⚙️ Configuration</h2>
+                
+                <form id="simulationForm">
+                    <!-- Environment Settings -->
+                    <div class="form-section">
+                        <h3>🌍 Environment</h3>
+                        <div class="form-group">
+                            <label>Grid Size:</label>
+                            <input type="number" name="grid_size" value="6" min="2" max="20">
+                        </div>
+                        <div class="form-group">
+                            <label>Training Episodes:</label>
+                            <input type="number" name="episodes" value="100" min="1" max="10000">
+                        </div>
+                    </div>
+
+                    <!-- Goals & Obstacles -->
+                    <div class="form-section">
+                        <h3>🎯 Goals & Obstacles</h3>
+                        <div class="form-group">
+                            <label>Number of Goals:</label>
+                            <input type="number" name="num_goals" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Goal Positions (x-y,x-y):</label>
+                            <input type="text" name="goal_positions" placeholder="5-5,4-4">
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Obstacles:</label>
+                            <input type="number" name="num_obstacles" value="3" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Obstacle Positions (x-y,x-y):</label>
+                            <input type="text" name="obstacle_positions" placeholder="1-1,2-2,3-1">
+                        </div>
+                    </div>
+
+                    <!-- Agent Selection -->
+                    <div class="form-section">
+                        <h3>🤖 Agent</h3>
+                        <div class="form-group">
+                            <label>Select Agent:</label>
+                            <select name="agent" id="agentSelect">
+                                {% for agent in agents %}
+                                <option value="{{ agent }}">{{ agent }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Agent Parameters -->
+                    <div class="form-section">
+                        <h3>📊 Parameters</h3>
+                        <div class="form-group">
+                            <label>Learning Rate (α):</label>
+                            <input type="number" name="alpha" value="0.1" min="0" max="1" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Factor (γ):</label>
+                            <input type="number" name="gamma" value="0.9" min="0" max="1" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Exploration (ε):</label>
+                            <input type="number" name="epsilon" value="0.1" min="0" max="1" step="0.01">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="startTraining">
+                        🚀 Start Training
+                    </button>
+                </form>
+            </div>
+
+            <!-- RIGHT PANEL - VISUALIZATION -->
+            <div class="visualization-panel">
+                <!-- Controls -->
+                <div class="controls-panel">
+                    <button class="control-btn" onclick="startSimulation()" id="startBtn">
+                        ▶️ Start Simulation
+                    </button>
+                    <button class="control-btn" onclick="pauseSimulation()" id="pauseBtn">
+                        ⏸️ Pause
+                    </button>
+                    <button class="control-btn" onclick="resetSimulation()" id="resetBtn">
+                        🔄 Reset
+                    </button>
+                    
+                    <div class="speed-control">
+                        <label>Speed:</label>
+                        <input type="range" id="speedControl" min="1" max="10" value="5">
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="status-panel">
+                    <div class="status-item">
+                        <span>Training Status:</span>
+                        <span class="status-badge status-training" id="trainingStatus">
+                            Ready
+                        </span>
+                    </div>
+                    <div class="status-item">
+                        <span>Episode:</span>
+                        <span id="episodeInfo">0/0</span>
+                    </div>
+                </div>
+
+                <!-- Canvases -->
+                <div class="canvas-container">
+                    <div class="canvas-wrapper">
+                        <h3>🎮 Grid World</h3>
+                        <canvas id="gridCanvas" class="grid-canvas" width="500" height="500"></canvas>
+                    </div>
+                    
+                    <div class="canvas-wrapper">
+                        <h3>📈 Convergence</h3>
+                        <canvas id="errorCanvas" class="error-canvas" width="500" height="500"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
