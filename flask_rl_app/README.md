@@ -6,30 +6,26 @@ Elle permet d’expérimenter et de visualiser le comportement de **plusieurs ag
 
 ---
 
-## 🧩 Structure du projet
+## 📂 Structure du projet
 
 flask_rl_app/
-│
 ├── agents/
-│ ├── random_agent.py
-│ ├── policy_iteration.py
-│ ├── value_iteration.py
-│ ├── montecarlo_agent.py
-│ ├── qlearning_agent.py
-│
+│   ├── random_agent.py
+│   ├── policy_iteration.py
+│   ├── value_iteration.py
+│   ├── montecarlo_agent.py
+│   └── qlearning_agent.py
 ├── trainers/
-│ └── trainer.py
-│
+│   └── trainer.py
 ├── static/
-│ ├── style.css
-│ └── scripts.js
-│
+│   ├── style.css
+│   └── scripts.js
 ├── templates/
-│ └── index.html
-│
+│   └── index.html
 ├── app.py
 ├── README.md
 └── requirements.txt
+
 
 
 ---
@@ -69,3 +65,4 @@ L’application Flask offre une **interface intuitive** où l’utilisateur peut
 ```bash
 git clone https://github.com/hinimdoumorsia/Reinforcement-and-DeepRL.git
 cd Reinforcement-and-DeepRL/flask_rl_app
+
