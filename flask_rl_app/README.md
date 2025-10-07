@@ -4,29 +4,31 @@
 Ce projet est une **application Flask interactive** dédiée à l’apprentissage par renforcement dans un environnement **GridWorld**.  
 Elle permet d’expérimenter et de visualiser le comportement de **plusieurs agents** selon différents algorithmes, tout en offrant une **interface intuitive** pour configurer les paramètres d’entraînement.
 
+---
 
 ## 📂 Structure du projet
 
+```text
 flask_rl_app/
-├── agents/
-│   ├── random_agent.py
-│   ├── policy_iteration.py
-│   ├── value_iteration.py
-│   ├── montecarlo_agent.py
-│   └── qlearning_agent.py
-├── trainers/
-│   └── trainer.py
-├── static/
-│   ├── style.css
-│   └── scripts.js
-├── templates/
-│   └── index.html
-├── app.py
-├── README.md
-└── requirements.txt
+    agents/
+        random_agent.py
+        policy_iteration.py
+        value_iteration.py
+        montecarlo_agent.py
+        qlearning_agent.py
+    trainers/
+        trainer.py
+    static/
+        style.css
+        scripts.js
+    templates/
+        index.html
+    app.py
+    README.md
+    requirements.txt
 
 
-
+---
 
 
 ## 🤖 Agents inclus
@@ -64,6 +66,7 @@ L’application Flask offre une **interface intuitive** où l’utilisateur peut
 ```bash
 git clone https://github.com/hinimdoumorsia/Reinforcement-and-DeepRL.git
 cd Reinforcement-and-DeepRL/flask_rl_app
+
 
 
 
