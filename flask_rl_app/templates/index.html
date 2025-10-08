@@ -126,17 +126,61 @@
                 </div>
 
                 <!-- Canvases -->
-                <div class="canvas-container">
-                    <div class="canvas-wrapper">
-                        <h3>🎮 Grid World</h3>
-                        <canvas id="gridCanvas" class="grid-canvas" width="500" height="500"></canvas>
-                    </div>
-                    
-                    <div class="canvas-wrapper">
-                        <h3>📈 Convergence</h3>
-                        <canvas id="errorCanvas" class="error-canvas" width="500" height="500"></canvas>
-                    </div>
-                </div>
+                <!-- ... votre code existant ... -->
+
+<!-- Status -->
+<div class="status-panel">
+    <!-- ... -->
+</div>
+
+<!-- ⬇️ REMPLACER À PARTIR D'ICI ⬇️ -->
+
+<!-- Canvases -->
+<div class="visualization-dashboard">
+    <!-- Ligne 1: Vos anciennes visualisations -->
+    <div class="dashboard-row">
+        <div class="viz-window">
+            <h3>🎮 Grid World</h3>
+            <canvas id="gridCanvas" class="grid-canvas" width="400" height="400"></canvas>
+        </div>
+        <div class="viz-window">
+            <h3>📈 Convergence</h3>
+            <canvas id="errorCanvas" class="error-canvas" width="400" height="400"></canvas>
+        </div>
+    </div>
+    
+    <!-- Ligne 2: Nouvelles visualisations -->
+    <div class="dashboard-row">
+        <div class="viz-window">
+            <h3>🧭 Politique & Valeurs</h3>
+            <canvas id="policyCanvas" width="400" height="400"></canvas>
+        </div>
+        <div class="viz-window">
+            <h3>💰 Rewards</h3>
+            <canvas id="rewardCanvas" width="400" height="400"></canvas>
+        </div>
+    </div>
+    
+    <!-- Ligne 3: Statistiques -->
+    <div class="viz-window full-width">
+        <h3>📊 Statistiques</h3>
+        <div id="statsPanel" class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-value" id="currentEpisode">0</div>
+                <div class="stat-label">Épisode</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="successRate">0%</div>
+                <div class="stat-label">Taux de Succès</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ⬆️ JUSQU'ICI ⬆️ -->
+
+</div> <!-- fermeture de visualization-panel -->
+</div> <!-- fermeture de main-content -->
             </div>
         </div>
     </div>

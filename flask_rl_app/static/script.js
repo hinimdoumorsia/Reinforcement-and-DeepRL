@@ -5,6 +5,12 @@ class RLGridWorld {
         this.errorCanvas = document.getElementById("errorCanvas");
         this.errorCtx = this.errorCanvas.getContext("2d");
         
+        // NOUVEAUX CANVAS
+        this.policyCanvas = document.getElementById("policyCanvas");
+        this.policyCtx = this.policyCanvas?.getContext("2d");
+        this.rewardCanvas = document.getElementById("rewardCanvas");
+        this.rewardCtx = this.rewardCanvas?.getContext("2d");
+        
         this.simulationRunning = false;
         this.simulationSpeed = 200;
         this.currentData = null;
@@ -18,9 +24,12 @@ class RLGridWorld {
         // Style pour le thème sombre
         this.gridCanvas.style.background = '#0f172a';
         this.errorCanvas.style.background = '#0f172a';
+        
+        // NOUVEAUX STYLES
+        if (this.policyCanvas) this.policyCanvas.style.background = '#0f172a';
+        if (this.rewardCanvas) this.rewardCanvas.style.background = '#0f172a';
     }
 
-    // AJOUT DE LA MÉTHODE DE DÉBOGAGE ICI
     logTrainingInfo() {
         if (!this.currentData) return;
         
@@ -123,11 +132,10 @@ class RLGridWorld {
         }
     }
 
-    // MODIFICATION DE updateDisplay() POUR AJOUTER LE DÉBOGAGE
+    // MISE À JOUR DE updateDisplay() AVEC NOUVELLES VISUALISATIONS
     updateDisplay() {
         if (!this.currentData) return;
 
-        // AJOUT: Log des informations de training
         this.logTrainingInfo();
 
         // Update status
@@ -144,9 +152,12 @@ class RLGridWorld {
         document.getElementById('episodeInfo').textContent = 
             `${this.currentData.current_episode}/${this.currentData.total_episodes}`;
 
-        // Draw visualizations
+        // Draw ALL visualizations
         this.drawGrid();
         this.drawError();
+        this.drawPolicy();
+        this.drawRewardEvolution();
+        this.updateStats();
     }
 
     drawGrid() {
@@ -322,6 +333,188 @@ class RLGridWorld {
         this.errorCtx.rotate(-Math.PI / 2);
         this.errorCtx.fillText('Error Value', 0, 0);
         this.errorCtx.restore();
+    }
+
+    // NOUVELLE MÉTHODE POUR LA POLITIQUE
+    drawPolicy() {
+        if (!this.currentData || !this.policyCtx) return;
+        
+        const { size, agent_name, goals, obstacles } = this.currentData;
+        const cellSize = this.policyCanvas.width / size;
+        
+        // Clear canvas
+        this.policyCtx.fillStyle = '#0f172a';
+        this.policyCtx.fillRect(0, 0, this.policyCanvas.width, this.policyCanvas.height);
+        
+        // Dessiner la grille
+        this.policyCtx.strokeStyle = '#334155';
+        this.policyCtx.lineWidth = 1;
+        for (let i = 0; i <= size; i++) {
+            this.policyCtx.beginPath();
+            this.policyCtx.moveTo(i * cellSize, 0);
+            this.policyCtx.lineTo(i * cellSize, this.policyCanvas.height);
+            this.policyCtx.stroke();
+            
+            this.policyCtx.beginPath();
+            this.policyCtx.moveTo(0, i * cellSize);
+            this.policyCtx.lineTo(this.policyCanvas.width, i * cellSize);
+            this.policyCtx.stroke();
+        }
+        
+        // Dessiner obstacles
+        obstacles.forEach(obs => {
+            this.policyCtx.fillStyle = '#475569';
+            this.policyCtx.fillRect(obs[0] * cellSize, obs[1] * cellSize, cellSize, cellSize);
+        });
+
+        // Dessiner goals
+        goals.forEach(goal => {
+            this.policyCtx.fillStyle = '#10b981';
+            this.policyCtx.fillRect(goal[0] * cellSize, goal[1] * cellSize, cellSize, cellSize);
+        });
+
+        // Dessiner des flèches de politique basiques (exemple)
+        for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+                // Éviter les obstacles et goals
+                if (obstacles.some(obs => obs[0] === x && obs[1] === y) ||
+                    goals.some(goal => goal[0] === x && goal[1] === y)) {
+                    continue;
+                }
+                
+                // Flèche simple pointant vers la droite (à améliorer)
+                this.drawArrow(this.policyCtx, x, y, cellSize, 'right');
+            }
+        }
+        
+        // Labels
+        this.policyCtx.fillStyle = '#e2e8f0';
+        this.policyCtx.font = 'bold 14px Arial';
+        this.policyCtx.textAlign = 'center';
+        this.policyCtx.fillText(`Policy: ${agent_name}`, this.policyCanvas.width/2, 20);
+    }
+
+    // NOUVELLE MÉTHODE POUR DESSINER LES FLÈCHES
+    drawArrow(ctx, x, y, cellSize, direction) {
+        const centerX = x * cellSize + cellSize / 2;
+        const centerY = y * cellSize + cellSize / 2;
+        const arrowSize = cellSize / 4;
+        
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2;
+        ctx.fillStyle = '#3b82f6';
+        
+        ctx.beginPath();
+        
+        switch(direction) {
+            case 'up':
+                ctx.moveTo(centerX, centerY - arrowSize);
+                ctx.lineTo(centerX - arrowSize/2, centerY);
+                ctx.lineTo(centerX + arrowSize/2, centerY);
+                break;
+            case 'right':
+                ctx.moveTo(centerX + arrowSize, centerY);
+                ctx.lineTo(centerX, centerY - arrowSize/2);
+                ctx.lineTo(centerX, centerY + arrowSize/2);
+                break;
+            case 'down':
+                ctx.moveTo(centerX, centerY + arrowSize);
+                ctx.lineTo(centerX - arrowSize/2, centerY);
+                ctx.lineTo(centerX + arrowSize/2, centerY);
+                break;
+            case 'left':
+                ctx.moveTo(centerX - arrowSize, centerY);
+                ctx.lineTo(centerX, centerY - arrowSize/2);
+                ctx.lineTo(centerX, centerY + arrowSize/2);
+                break;
+        }
+        
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    // NOUVELLE MÉTHODE POUR L'ÉVOLUTION DES REWARDS
+    drawRewardEvolution() {
+        if (!this.currentData || !this.rewardCtx) return;
+        
+        const { errors } = this.currentData;
+        
+        // Clear canvas
+        this.rewardCtx.fillStyle = '#0f172a';
+        this.rewardCtx.fillRect(0, 0, this.rewardCanvas.width, this.rewardCanvas.height);
+        
+        if (!errors || errors.length === 0) {
+            this.rewardCtx.fillStyle = '#64748b';
+            this.rewardCtx.font = '14px Arial';
+            this.rewardCtx.textAlign = 'center';
+            this.rewardCtx.fillText('Reward data will appear here', this.rewardCanvas.width/2, this.rewardCanvas.height/2);
+            return;
+        }
+        
+        // Calculer les rewards (simplifié)
+        const rewards = errors.map((error, index) => {
+            // Reward augmente quand l'erreur diminue
+            return Math.max(0, 1 - error) * 10;
+        });
+
+        // Normaliser les rewards
+        const maxReward = Math.max(...rewards.filter(r => !isNaN(r) && isFinite(r)));
+        const normalizedRewards = rewards.map(r => r / (maxReward || 1));
+
+        // Dessiner la courbe des rewards
+        const gradient = this.rewardCtx.createLinearGradient(0, 0, this.rewardCanvas.width, 0);
+        gradient.addColorStop(0, '#10b981');
+        gradient.addColorStop(1, '#f59e0b');
+        
+        this.rewardCtx.strokeStyle = gradient;
+        this.rewardCtx.lineWidth = 3;
+        this.rewardCtx.beginPath();
+
+        normalizedRewards.forEach((reward, index) => {
+            const x = (index / normalizedRewards.length) * this.rewardCanvas.width;
+            const y = this.rewardCanvas.height - (reward * this.rewardCanvas.height * 0.8) - 20;
+            
+            if (index === 0) {
+                this.rewardCtx.moveTo(x, y);
+            } else {
+                this.rewardCtx.lineTo(x, y);
+            }
+        });
+        this.rewardCtx.stroke();
+
+        // Labels
+        this.rewardCtx.fillStyle = '#e2e8f0';
+        this.rewardCtx.font = 'bold 14px Arial';
+        this.rewardCtx.textAlign = 'center';
+        this.rewardCtx.fillText('Reward Evolution', this.rewardCanvas.width / 2, 20);
+        
+        this.rewardCtx.font = '12px Arial';
+        this.rewardCtx.fillText('Episodes', this.rewardCanvas.width / 2, this.rewardCanvas.height - 5);
+    }
+
+    // NOUVELLE MÉTHODE POUR LES STATISTIQUES
+    updateStats() {
+        if (!this.currentData) return;
+        
+        const { current_episode, total_episodes, training_complete, positions = [] } = this.currentData;
+        
+        // Mettre à jour les statistiques
+        const currentEpisodeEl = document.getElementById('currentEpisode');
+        const successRateEl = document.getElementById('successRate');
+        
+        if (currentEpisodeEl) {
+            currentEpisodeEl.textContent = `${current_episode}/${total_episodes}`;
+        }
+        
+        if (successRateEl) {
+            let successRate = '0%';
+            if (training_complete) {
+                successRate = positions.length > 0 ? '100%' : '0%';
+            } else if (current_episode > 0) {
+                successRate = `${Math.min(100, (current_episode / total_episodes) * 100).toFixed(0)}%`;
+            }
+            successRateEl.textContent = successRate;
+        }
     }
 
     startSimulation() {
